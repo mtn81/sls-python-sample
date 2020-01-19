@@ -3,17 +3,26 @@ import json
 import logging
 import boto3
 import uuid
+import os
 
 # ログの設定
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # DynamoDB
-dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
+logger.info('DYNAMO_URL:' + str(os.environ.get('DYNAMO_URL')))
+dynamodb = (lambda url: 
+    boto3.resource('dynamodb') if url is None 
+    else boto3.resource('dynamodb', endpoint_url=url)
+)(os.environ.get('DYNAMO_URL'))
+
+#dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000')
+#dynamodb = boto3.resource('dynamodb')
 persons_tbl = dynamodb.Table('persons')
 
 
 def create_person(event, context):
+    logger.info('context:' + str(context))
     logger.info('headers:' + str(event['headers']))
     logger.info('body:' + event['body'])
 

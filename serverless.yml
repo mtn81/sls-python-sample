@@ -24,9 +24,23 @@ provider:
   name: aws
   runtime: python3.8
 
-# you can overwrite defaults here
-  stage: dev
+  stage: ${opt:stage, self:custom.defaultStage}
+  profile: ${self:custom.profiles.${self:provider.stage}}
   region: ap-northeast-1
+
+  environment: ${self:custom.env.${self:provider.stage}}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -162,3 +176,16 @@ custom:
       inMemory: true
       migrate: true
       #seed: true
+
+  defaultStage: dev
+
+  profiles:
+    local: default
+    dev: default
+    prd: default
+
+  env:
+    local:
+      DYNAMO_URL: http://localhost:8000
+    def:
+    prd:
