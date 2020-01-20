@@ -166,6 +166,12 @@ plugins:
   - serverless-python-requirements
 
 custom:
+  env:
+    local:
+      DYNAMO_URL: http://localhost:8000
+    dev: 
+    prd: 
+
   pythonRequirements:
     dockerizePip: true
   dynamodb:
@@ -180,12 +186,6 @@ custom:
   defaultStage: dev
 
   profiles:
-    local: default
-    dev: default
-    prd: default
-
-  env:
-    local:
-      DYNAMO_URL: http://localhost:8000
-    def:
-    prd:
+    local: sample
+    dev: sample
+    prd: sample
